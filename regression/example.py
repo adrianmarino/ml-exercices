@@ -16,7 +16,7 @@ def show_confidence(confidence, algorithm_name):
     print("{} Score: {:06.4f}%".format(algorithm_name, confidence * 100))
 
 
-def classifiers():
+def algorithms():
     return [
         # (svm.SVR(kernel='poly'), "SVR Poly"),
         # (svm.SVR(kernel='rbf'), "SVR rbf"),
@@ -39,7 +39,7 @@ data_set = DatasetFactory().createFrom(raw_dataset, label_offset=label_offset)
 showDataset(data_set)
 
 # Perform...
-for (algorithm, algorithm_name) in classifiers():
+for (algorithm, algorithm_name) in algorithms():
     classifier = Classifier(algorithm)
     confidence = classifier.train(data_set, test_size)
     show_confidence(confidence, algorithm_name)
