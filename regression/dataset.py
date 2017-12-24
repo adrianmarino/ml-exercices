@@ -1,11 +1,31 @@
 import math
+import numpy as np
+import pandas as pd
+from sklearn import preprocessing
+
+pd.options.mode.chained_assignment = None
+
+
+class Dataset:
+    def __init__(self, data_frame):
+        self.data_frame = data_frame
+
+    def features(self): return preprocessing.scale(np.array(self.__feature_columns()))
+
+    def labels(self): return np.array(self.__labels_column())
+
+    def head(self): return self.data_frame.head()
+
+    def __labels_column(self): return self.data_frame['label']
+
+    def __feature_columns(self): return self.data_frame.drop(['label'], 1)
+
+    def rows_count(self): return len(self.data_frame)
 
 
 class DatasetFactory:
-    def createFrom(self, raw_dataset, forecast_col="Close $", label_offset=0.01):
-        print("Build dataset...")
-        df = raw_dataset
-        df = df[["adj_open", "adj_high", "adj_low", "adj_close", "adj_volume"]]
+    def createFrom(self, data_frame, forecast_col="Close $", label_offset=0.01):
+        df = data_frame[["adj_open", "adj_high", "adj_low", "adj_close", "adj_volume"]]
 
         df["H-L Change %"] = self.__percent_diff(df, "adj_high", "adj_low", total_column="adj_close")
 
@@ -27,7 +47,7 @@ class DatasetFactory:
 
         df.dropna(inplace=True)
 
-        return df
+        return Dataset(df)
 
     def __percent_diff(self, df, column1, column2, total_column):
         return (df[column1] - df[column2]) / df[total_column] * 100

@@ -14,7 +14,7 @@ def singleton(cls):
 
 
 @singleton
-class Datasets:
+class DataSources:
     def remote_google_action_prices(self):
         df = Quandl.get("WIKI/GOOGL")
         df = df.rename(columns={
