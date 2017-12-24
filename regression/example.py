@@ -17,11 +17,11 @@ def classifiers(): return map(lambda alg: Classifier(alg), algorithms)
 # Params...
 test_size = 0.3
 label_offset = 0.01
-local_dataset = True
+local_dataset = False
 
 # Prepare...
 data_frame = DataSources().google_action_prices(local=local_dataset)
-data_set = DatasetFactory().createFrom(data_frame, label_offset=label_offset)
+data_set = DatasetFactory().createFrom(data_frame=data_frame, label_offset=label_offset)
 print(data_set)
 
 # Perform...
