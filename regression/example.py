@@ -20,7 +20,7 @@ label_offset = 0.01
 local_dataset = False
 
 # Prepare...
-data_frame = DataSources().google_action_prices(local=local_dataset)
+data_frame = DataSources().google_actions(local=local_dataset)
 data_set = DatasetFactory().createFrom(data_frame=data_frame, label_offset=label_offset)
 print(data_set)
 

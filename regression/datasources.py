@@ -15,7 +15,7 @@ def singleton(cls):
 
 @singleton
 class DataSources:
-    def remote_google_action_prices(self):
+    def remote_google_actions(self):
         df = Quandl.get("WIKI/GOOGL")
         df = df.rename(columns={
             'Date': 'date',
@@ -27,10 +27,10 @@ class DataSources:
         })
         return df
 
-    def local_google_action_prices(self):
+    def local_google_actions(self):
         df = pd.read_csv("./WIKI-PRICES.csv", index_col=1)
         df.index.names = ['Date']
         return df
 
-    def google_action_prices(self, local=True):
-        return self.local_google_action_prices() if local else self.remote_google_action_prices()
+    def google_actions(self, local=True):
+        return self.local_google_actions() if local else self.remote_google_actions()
