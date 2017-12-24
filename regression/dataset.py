@@ -22,6 +22,16 @@ class Dataset:
 
     def rows_count(self): return len(self.data_frame)
 
+    def __str__(self):
+        return self.__str_container(self.data_frame.head().to_string())
+
+    def __str_container(self, content):
+        str = '-' * 80 + '\n'
+        str += "Dataset Head (Total: {} rows)\n".format(self.rows_count())
+        str += '-' * 80 + '\n'
+        str += content + '\n'
+        str += '-' * 80
+        return str
 
 class DatasetFactory:
     def createFrom(self, data_frame, forecast_col="Close $", label_offset=0.01):
@@ -54,3 +64,4 @@ class DatasetFactory:
 
     def __normal_percent_diff(self, df, new_value, old_value):
         return self.__percent_diff(df, new_value, old_value, total_column=old_value)
+
