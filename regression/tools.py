@@ -4,7 +4,7 @@ from tabulate import tabulate
 class ConfidenceTable:
     def __init__(self, rows=[], format='grid'):
         self.format = format
-        self.headers = ['Algorithm', 'Confidence']
+        self.headers = ['Algorithm', 'Confidence (%)']
         self.rows = self.__to_rows(rows)
 
     def add_rows(self, rows):
@@ -12,11 +12,11 @@ class ConfidenceTable:
         return self
 
     def add_row(self, row):
-        self.rows.append([row[0], "{}%".format(row[1])])
+        self.rows.append(self.__create_row(row))
         return self
 
-    def __to_rows(self, rows):
-        return map(lambda row: [row[0], "{}%".format(row[1])],  rows)
+    def __create_row(self, data): return [data[0], data[1] * 100]
 
-    def __str__(self):
-        return tabulate(self.rows, headers=self.headers, tablefmt=self.format)
+    def __to_rows(self, rows): return map(self.__create_row,  rows)
+
+    def __str__(self): return tabulate(self.rows, headers=self.headers, tablefmt=self.format)
