@@ -1,22 +1,13 @@
 import pandas as pd
 import quandl as Quandl
+from tools import singleton
 
-
-def singleton(cls):
-    instances = {}
-
-    def get_instance():
-        if cls not in instances:
-            instances[cls] = cls()
-        return instances[cls]
-
-    return get_instance
-
+API_KEY="LSysv2r1X92zcGoeTqPw"
 
 @singleton
 class DataSources:
-    def remote_google_actions(self):
-        df = Quandl.get("WIKI/GOOGL")
+    def google_actions(self):
+        df = Quandl.get("WIKI/GOOGL", api_key=API_KEY)
         df = df.rename(columns={
             'Date': 'date',
             'Adj. Open': 'adj_open',
@@ -26,11 +17,3 @@ class DataSources:
             'Adj. Volume': 'adj_volume'
         })
         return df
-
-    def local_google_actions(self):
-        df = pd.read_csv("./WIKI-PRICES.csv", index_col=1)
-        df.index.names = ['Date']
-        return df
-
-    def google_actions(self, local=True):
-        return self.local_google_actions() if local else self.remote_google_actions()

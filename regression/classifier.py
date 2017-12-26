@@ -9,6 +9,8 @@ class Classifier:
 
         return self.__confidence(X_test, y_test)
 
+    def predict(self, features): return self.classifier.predict(features)
+
     def name(self): return self.classifier.__class__.__name__
 
     def __confidence(self, X_test, y_test):

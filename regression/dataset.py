@@ -12,22 +12,29 @@ class Dataset:
     def __init__(self, data_frame):
         self.data_frame = data_frame
 
-    def features(self): return preprocessing.scale(np.array(self.__feature_columns()))
+    def features(self): return preprocessing.scale(np.array(self.__feature_columns(self.frame())))
 
-    def labels(self): return np.array(self.__labels_column())
+    def labels(self): return np.array(self.__labels_column(self.frame()))
 
-    def head(self): return self.data_frame.head()
+    def head(self, size=5): return Dataset(self.frame().head(size))
+
+    def tail(self, size=5): return Dataset(self.frame().tail(size))
+
+    def frame(self): return self.data_frame
 
     def train_test_split(self, test_size=0.2):
-        return model_selection.train_test_split(self.features(), self.labels(), test_size=test_size)
+        features = self.__feature_columns(self.frame())
+        labels = self.__labels_column(self.frame())
 
-    def __labels_column(self): return self.data_frame['Label']
+        return model_selection.train_test_split(features, labels, test_size=test_size)
 
-    def __feature_columns(self): return self.data_frame.drop(['Label'], 1)
+    def __labels_column(self, data_frame): return data_frame['Label']
 
-    def __len__(self): return len(self.data_frame)
+    def __feature_columns(self, data_frame): return data_frame.drop(['Label'], 1)
 
-    def __str__(self): return table_decorator("Dataset head", self.data_frame.head())
+    def __len__(self): return len(self.frame())
+
+    def __str__(self): return table_decorator("Dataset head", self.frame().head())
 
 
 class DatasetFactory:
@@ -49,8 +56,11 @@ class DatasetFactory:
 
         df.fillna(-99999, inplace=True)
 
-        forecast_out = int(math.ceil(label_offset * len(df)))
-        df["Label"] = df[forecast_col].shift(-forecast_out)
+        if label_offset > 0:
+            forecast_out = int(math.ceil(label_offset * len(df)))
+            df["Label"] = df[forecast_col].shift(-forecast_out)
+        else:
+            df["Label"] = df[forecast_col]
 
         df.dropna(inplace=True)
 
