@@ -2,6 +2,7 @@ import math
 import numpy as np
 import pandas as pd
 from sklearn import preprocessing
+from tools import table_decorator
 
 pd.options.mode.chained_assignment = None
 
@@ -22,19 +23,13 @@ class Dataset:
 
     def rows_count(self): return len(self.data_frame)
 
-    def __str__(self):
-        return self.__str_container(self.data_frame.head().to_string())
+    def __len__(self): return len(self.data_frame)
 
-    def __str_container(self, content):
-        str = '-' * 80 + '\n'
-        str += "Dataset Head (Total: {} rows)\n".format(self.rows_count())
-        str += '-' * 80 + '\n'
-        str += content + '\n'
-        str += '-' * 80
-        return str
+    def __str__(self): return table_decorator("Dataset head", self.data_frame.head())
+
 
 class DatasetFactory:
-    def createFrom(self, data_frame, forecast_col="Close $", label_offset=0.01):
+    def create_from(self, data_frame, forecast_col="Close $", label_offset=0.01):
         df = data_frame[["adj_open", "adj_high", "adj_low", "adj_close", "adj_volume"]]
 
         df["H-L Change %"] = self.__percent_diff(df, "adj_high", "adj_low", total_column="adj_close")
