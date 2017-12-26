@@ -21,9 +21,9 @@ class Dataset:
     def train_test_split(self, test_size=0.2):
         return model_selection.train_test_split(self.features(), self.labels(), test_size=test_size)
 
-    def __labels_column(self): return self.data_frame['label']
+    def __labels_column(self): return self.data_frame['Label']
 
-    def __feature_columns(self): return self.data_frame.drop(['label'], 1)
+    def __feature_columns(self): return self.data_frame.drop(['Label'], 1)
 
     def __len__(self): return len(self.data_frame)
 
@@ -50,7 +50,7 @@ class DatasetFactory:
         df.fillna(-99999, inplace=True)
 
         forecast_out = int(math.ceil(label_offset * len(df)))
-        df["label"] = df[forecast_col].shift(-forecast_out)
+        df["Label"] = df[forecast_col].shift(-forecast_out)
 
         df.dropna(inplace=True)
 

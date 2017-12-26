@@ -23,12 +23,13 @@ def confidence_table(rows):
 # Params...
 test_size = 0.1
 label_offset = 0.01
-local_dataset = True
+local_dataset = False
 
 # Prepare...
 data_frame = DataSources().google_actions(local=local_dataset)
 data_set = DatasetFactory().create_from(data_frame=data_frame, label_offset=label_offset)
-print(data_set)
+classifiers = classifiers()
 
 # Perform...
-print(confidence_table(map(lambda clr: [clr.name(), clr.train(data_set, test_size)], classifiers())))
+print(data_set)
+print(confidence_table(map(lambda clr: [clr.name(), clr.train(data_set, test_size)], classifiers)))
