@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from sklearn import preprocessing
 from tools import table_decorator
+from sklearn import model_selection
 
 pd.options.mode.chained_assignment = None
 
@@ -17,11 +18,12 @@ class Dataset:
 
     def head(self): return self.data_frame.head()
 
+    def train_test_split(self, test_size=0.2):
+        return model_selection.train_test_split(self.features(), self.labels(), test_size=test_size)
+
     def __labels_column(self): return self.data_frame['label']
 
     def __feature_columns(self): return self.data_frame.drop(['label'], 1)
-
-    def rows_count(self): return len(self.data_frame)
 
     def __len__(self): return len(self.data_frame)
 
