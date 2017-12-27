@@ -1,6 +1,6 @@
 from classifier import Classifier
 from datasources import DataSources
-from tools import table_decorator
+from tools import table_decorator, ObjectStorage, first
 from dataset import Dataset, DatasetFactory
 from sklearn.linear_model import LinearRegression
 import pandas as pd
@@ -24,21 +24,13 @@ def show_graph(real_labels, predicted_labels):
     graph.set_ylabel("US$")
     plt.show()
 
-# -----------------------------------------------------------------------------
-# Main program...
-# -----------------------------------------------------------------------------
-# Params...
-test_size = 0.4
-label_offset = 0.01
 
-# Prepare...
 data_frame = DataSources().google_actions()
-data_set = DatasetFactory().create_from(data_frame=data_frame, label_offset=label_offset)
+data_set = DatasetFactory().create_from(data_frame)
 classifiers = classifiers()
 
-# Perform...
-results = map(lambda clr: [clr.name(), clr.train(data_set, test_size), ], classifiers)
+results = map(lambda clr: [clr.name(), clr.train(data_set), ], classifiers)
 print(confidence_table(results))
 
-_, test_features, _, real_test_labels = data_set.train_test_split(test_size=test_size)
-show_graph(real_test_labels, predicted_labels=classifiers[0].predict(test_features))
+ObjectStorage().save(first(classifiers))
+
