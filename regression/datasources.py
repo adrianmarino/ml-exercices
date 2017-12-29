@@ -1,4 +1,3 @@
-import pandas as pd
 import quandl as Quandl
 from tools import singleton
 

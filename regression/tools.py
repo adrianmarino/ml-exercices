@@ -18,7 +18,11 @@ def first(collection): return list(collection)[0]
 
 def table_decorator(header, content):
     str = '-' * 80 + '\n'
-    str += "{} ({} rows)\n".format(header, len(content))
+
+    count = len(content)
+    size_desc = "{} ({} rows)\n".format(header, count) if count > 10 else ""
+    str += "{} {}\n".format(header, size_desc)
+
     str += '-' * 80 + '\n'
     str += content.to_string() + '\n'
     str += '-' * 80

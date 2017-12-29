@@ -9,62 +9,79 @@ pd.options.mode.chained_assignment = None
 
 
 class Dataset:
-    def __init__(self, data_frame):
-        self.data_frame = data_frame
+    def __init__(self, data_frame, features, test_features, labels):
+        self.__data_frame = data_frame
+        self.__features = features
+        self.__test_features = test_features
+        self.__labels = labels
 
-    def features(self): return preprocessing.scale(np.array(self.__feature_columns(self.frame())))
+    def test_features(self): return self.__test_features
 
-    def labels(self): return np.array(self.__labels_column(self.frame()))
+    def features(self): return self.__features
 
-    def head(self, size=5): return Dataset(self.frame().head(size))
+    def labels(self): return self.__labels
 
-    def tail(self, size=5): return Dataset(self.frame().tail(size))
-
-    def frame(self): return self.data_frame
+    def frame(self): return self.__data_frame
 
     def train_test_split(self, test_size=0.2):
-        features = self.__feature_columns(self.frame())
-        labels = self.__labels_column(self.frame())
+        return model_selection.train_test_split(self.features(), self.labels(), test_size=test_size)
 
-        return model_selection.train_test_split(features, labels, test_size=test_size)
-
-    def __labels_column(self, data_frame): return data_frame['Label']
-
-    def __feature_columns(self, data_frame): return data_frame.drop(['Label'], 1)
-
-    def __len__(self): return len(self.frame())
+    def __len__(self): return len(self.features())
 
     def __str__(self): return table_decorator("Dataset head", self.frame().head())
 
 
 class DatasetFactory:
-    def create_from(self, data_frame, forecast_col="Close $", label_offset=0.01):
-        df = data_frame[["adj_open", "adj_high", "adj_low", "adj_close", "adj_volume"]]
+    def create_from(self, data_frame, label_column="close", closed_price_offset=0.01):
+        df = self.__raw_data(data_frame)
+        df = self.__feature_columns(df)
 
-        df["H-L Change %"] = self.__percent_diff(df, "adj_high", "adj_low", total_column="adj_close")
-
-        df["Price Change %"] = self.__normal_percent_diff(df, "adj_close", "adj_open")
-
-        df = df.rename(columns={
-            'adj_high': 'High $',
-            'adj_low': 'Low $',
-            'adj_close': 'Close $',
-            'adj_open': 'Open $',
-            'adj_volume': 'Trs'
-        })
-        df = df[["Close $", "H-L Change %", "Price Change %", "Trs"]]
-
+        # Fill null values with -999999...
         df.fillna(-99999, inplace=True)
 
-        if label_offset > 0:
-            forecast_out = int(math.ceil(label_offset * len(df)))
-            df["Label"] = df[forecast_col].shift(-forecast_out)
-        else:
-            df["Label"] = df[forecast_col]
+        # Get offset of close prices...
+        closed_price_offset_rows_count = int(math.ceil(closed_price_offset * len(df)))
 
+        # Offset up close prices to predict future close prices...
+        df["label"] = df[label_column].shift(-closed_price_offset_rows_count)
+
+        # Get normalized features...
+        features = preprocessing.scale(np.array(df.drop(["label"], 1)))
+
+        # Get feature with predict...
+        first_features = features[:-closed_price_offset_rows_count]
+
+        # Get features without label close prices...
+        last_features = features[-closed_price_offset_rows_count:]
+        # Drop rows with na(null) values(last rows)...
         df.dropna(inplace=True)
 
-        return Dataset(df)
+        # Get labels corresponding to first features...
+        labels = np.array(df["label"])
+
+        print("Dataset:")
+        print("* Rows: {} / Features: {} Labels: {}.".format(len(df), len(first_features), len(labels)))
+        print("* Closed price offset: {} / Features to predict: {}."
+              .format(closed_price_offset_rows_count, len(last_features)))
+
+        return Dataset(df, first_features, last_features, labels)
+
+    def __feature_columns(self, df):
+        df["hl_change"] = self.__percent_diff(df, "high", "low", total_column="close")
+        df["price_change"] = self.__normal_percent_diff(df, "close", "open")
+        df = df[["close", "hl_change", "price_change", "volume"]]
+        return df
+
+    def __raw_data(self, data_frame):
+        df = data_frame[["adj_open", "adj_high", "adj_low", "adj_close", "adj_volume"]]
+        df = df.rename(columns={
+            'adj_high': 'high',
+            'adj_low': 'low',
+            'adj_close': 'close',
+            'adj_open': 'open',
+            'adj_volume': 'volume'
+        })
+        return df
 
     def __percent_diff(self, df, column1, column2, total_column):
         return (df[column1] - df[column2]) / df[total_column] * 100
