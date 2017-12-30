@@ -73,13 +73,13 @@ class DatasetFactory:
         return df
 
     def __raw_data(self, data_frame):
-        df = data_frame[["adj_open", "adj_high", "adj_low", "adj_close", "adj_volume"]]
+        df = data_frame[["Adj. Open", "Adj. High", "Adj. Low", "Adj. Close", "Adj. Volume"]]
         df = df.rename(columns={
-            'adj_high': 'high',
-            'adj_low': 'low',
-            'adj_close': 'close',
-            'adj_open': 'open',
-            'adj_volume': 'volume'
+            'Adj. High': 'high',
+            'Adj. Low': 'low',
+            'Adj. Close': 'close',
+            'Adj. Open': 'open',
+            'Adj. Volume': 'volume'
         })
         return df
 
