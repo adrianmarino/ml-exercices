@@ -18,8 +18,8 @@ def plot_loss(history):
     plt.plot(history.history['val_loss'], 'C0')
 
     # plt.title('model loss')
-    plt.ylabel('loss', fontsize=15)
-    plt.xlabel('epoch', fontsize=15)
+    plt.ylabel('Loss', fontsize=15)
+    plt.xlabel('Epoch', fontsize=15)
     plt.legend(['train', 'valid'], loc='best')
     plt.xlim((0, 20))
     plt.xticks(np.arange(0, 21, 5))
