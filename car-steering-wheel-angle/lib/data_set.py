@@ -49,7 +49,11 @@ class DataSet:
             **options
         )
 
-        data_set_a = DataSet(features_a, features_b, name=self.name)
+        data_set_a = DataSet(features_a, labels_a, name=self.name)
         data_set_b = DataSet(features_b, labels_b, name=name)
         print(f'Split {self.name} data set into (split percent: {split_percent} %):\n - {data_set_a}\n - {data_set_b}')
         return data_set_a, data_set_b
+
+    def features(self): return self.features
+
+    def labels(self): return self.labels

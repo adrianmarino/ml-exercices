@@ -1,14 +1,17 @@
-image:
-    height: 66
-    width: 200
-    channel: 3
 path:
-    data_set: ./dataset
-    models: ./models
-    output: ./output
+  models: ./models
+  output: ./output
 train:
-    batch_size: 128
-    validation_set_size: 0.1
-epochs:
+  batch_size: 512
+  validation_set_size: 0.2
+  epochs: 20
+data_set:
+  epochs:
     train: [1, 2, 3, 4, 5, 6, 7, 8, 9]
     test: [10]
+  image:
+    height: 66
+    width: 200
+    channels: 3
+    board_height: 150
+  path: ./dataset
