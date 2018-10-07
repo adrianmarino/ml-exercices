@@ -6,3 +6,4 @@ __pycache__/
 storage/
 **/*.p
 **/dataset/
+**/basic-softmax/summaries/

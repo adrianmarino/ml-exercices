@@ -39,9 +39,10 @@ class ModelWrapper:
         return history
 
     def evaluate(self, test_set, batch_size=128):
-        test_loss = self.model.evaluate(
+        test_loss, test_acc = self.model.evaluate(
             test_set.features,
             test_set.labels,
             batch_size=batch_size
         )
-        print(f'Loss: {test_loss}')
+        print(f'Loss: {test_loss}, Acc: {test_acc}')
+        return test_loss, test_acc
